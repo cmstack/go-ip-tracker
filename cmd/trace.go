@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -18,9 +19,20 @@ var traceCmd = &cobra.Command{
 	Short: "Trace IP",
 	Long:  "Trace IP",
 	Run: func(cmd *cobra.Command, args []string) {
+		// Regex to match IPv4 addresses
+		ipv4Regex := `^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$`
+
+		// Regex to match IPv4 addresses
+		r, _ := regexp.Compile(ipv4Regex)
+
 		if len(args) > 0 {
 			for _, ip := range args {
-				showData(ip)
+				// Check if the IP address is valid
+				if r.MatchString(ip) {
+					showData(ip)
+				} else {
+					fmt.Println("Invalid IP address:", ip)
+				}
 			}
 		} else {
 			fmt.Println("Please provide an IP address")
